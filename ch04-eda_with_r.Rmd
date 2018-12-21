@@ -4,3 +4,85 @@ output: html_notebook
 ---
 
 I am walking through the [Chapter 4: RDA with R of *Statistics for Soil Survey*](http://ncss-tech.github.io/stats_for_soil_survey/chapters/4_exploratory_analysis/4_exploratory_analysis.html) by Tom D’Avello and Stephen Roecker to freshen up my R skills.
+
+So following Tukey. The domain here is some soil sample stuff or something, I don't know anything about it. Exciting.
+
+Let's first install the interface package, whose [CRAN description](https://cran.r-project.org/package=soilDB).
+
+> A collection of functions for reading data from USDA-NCSS soil databases.
+
+```{r install package}
+install.packages('soilDB')
+```
+
+## 3. Data Inspection
+
+```{r}
+library(soilDB)
+```
+
+The book uses loafercreek dataset from the CA630 Soil Survey Area.
+
+```{r loaddata}
+data("loafercreek")
+```
+
+```{r}
+# generalized horizon designations
+n <- c("A", "BAt", "Bt1", "Bt2", "Cr", "R")
+# REGEX ruled
+p <- c("A", "BA|AB", "Bt|Bw", "Bt3|Bt4|2B|C", "Cr", "R")
+```
+
+Compute genhz labels - whatever that means - and add to `loafercreek` dataset. `generalize.hz` is from `aqp`, a dependency of the `soilDB` package.
+
+```{r}
+loafercreek$genhz <- generalize.hz(loafercreek$hzname, n, p)
+```
+
+Extract the horizon table, part of the `loafercreek` dataset, using a special function for.
+
+```{r extract horizon table}
+h <- horizons(loafercreek)
+```
+
+Examine the matching pairing of the genhz label to the hzname
+
+```{r}
+table(h$genhz, h$hzname)
+```
+
+And also
+
+```{r}
+View(h)
+```
+
+Statistical overview of all the columns, though the book only summarizes some of the columns to save space.
+
+```{r}
+summary(h)
+```
+
+Ok so `summary()` gives different kinds of output depending on data type of each column in the `h` dataframe, as well as missing values if they are present.
+
+Check levels of a variable. Why does this return `NULL`? levels ought to work for factors.
+
+```{r}
+levels(h$genhz)
+```
+This is suitable for factor or character variables.
+
+```{r}
+sort(unique(h$hzname))
+```
+
+To replace values, e.g. typos, we could do
+
+    h$hzname <- ifelse(h$hzname == "BT", "Bt", h$hzname)
+
+or
+
+    h$hzname[h$hzname == "BT"] <- "Bt"
+
+Which for this example is a question of taste, but maybe more complicated say computations might be useful to do the first style.
