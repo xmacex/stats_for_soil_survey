@@ -1,0 +1,6 @@
+---
+title: "Chapter 4. EDA with R"
+output: html_notebook
+---
+
+I am walking through the [Chapter 4: RDA with R of *Statistics for Soil Survey*](http://ncss-tech.github.io/stats_for_soil_survey/chapters/4_exploratory_analysis/4_exploratory_analysis.html) by Tom D’Avello and Stephen Roecker to freshen up my R skills.
