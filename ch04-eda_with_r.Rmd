@@ -105,7 +105,7 @@ We will look at
 
 We could call these *representative values* in "NASIS speak", the *Statistics for Soil Survey* says.
 
-Mean is formally $\bar{x} = \frac{\Sigma^n_{i=1} x_i}{n}$ for $n$ samples, specifically using samples here and not population, hence $\bar{x}$. Dropping missing values
+Mean is formally $\bar{x} = \frac{\sum^n_{i=1} x_i}{n}$ for $n$ samples, specifically using samples here and not population, hence $\bar{x}$. Dropping missing values
 
 ```{r clay mean}
 mean(na.exclude(h$clay)) # or mean(h$clay, na.rm = TRUE)
@@ -156,7 +156,7 @@ aggregate(clay ~ genhz, data = h, mean)
 
 ### 4.2 Measures of Dispersion
 
-Variance, ie deviation from mean is $s^2 = \frac{\Sigma_{i=1}^n(x_i - \bar{x})^2}{n-1}$ aka *sum of squares*.
+Variance, ie deviation from mean is $s^2 = \frac{\sum_{i=1}^n(x_i - \bar{x})^2}{n-1}$ aka *sum of squares*.
 
 ```{r clay variance}
 var(h$clay, na.rm = TRUE)
@@ -192,12 +192,12 @@ IQR(h$clay, na.rm = TRUE)
 
 ### 4.3 Correlation
 
-```{r}
+```{r middle horizon depth}
 h$hzdepm <- (h$hzdepb + h$hzdept) / 2
-vars <- c("hzdepm", "clay", "sand", "total_frags_pct", "phfield")
 ```
 
-```{r}
+```{r clay selected correlations}
+vars <- c("hzdepm", "clay", "sand", "total_frags_pct", "phfield")
 round(cor(h[vars], use = "complete.obs"), 2)
 ```
 
