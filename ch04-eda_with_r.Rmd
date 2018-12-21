@@ -86,3 +86,118 @@ or
     h$hzname[h$hzname == "BT"] <- "Bt"
 
 Which for this example is a question of taste, but maybe more complicated say computations might be useful to do the first style.
+
+
+
+## 4 Descriptive Statistics
+
+We will look at 
+
+| Statistic | Function        |
+| ----------| ----------------|
+| Mean      | `mean()`        |
+| Median    | `median()`      |
+| Mode      | `sort(table(), decreasing = TRUE)[1]`
+| Standard deviation | `sd()` |
+| Quantiles | `quantile()`    |
+
+### 4.1 Measures of Central Tendency
+
+We could call these *representative values* in "NASIS speak", the *Statistics for Soil Survey* says.
+
+Mean is formally $\bar{x} = \frac{\Sigma^n_{i=1} x_i}{n}$ for $n$ samples, specifically using samples here and not population, hence $\bar{x}$. Dropping missing values
+
+```{r clay mean}
+mean(na.exclude(h$clay)) # or mean(h$clay, na.rm = TRUE)
+```
+
+Median is the middle, ie 50th percentile.
+```{r clay median}
+median(h$clay, na.rm = TRUE)
+```
+
+And finally mode, the most frequent measurement. R provides no function for mode, but we can
+
+```{r clay mode}
+sort(table(round(h$clay)), decreasing = TRUE)[1]
+```
+
+Ok so why two values? Because those two are equally frequent.
+
+For frequencies we can use `table()` and `xtabs()`.
+
+```{r frequency of genhz values}
+table(h$genhz)
+```
+
+To see two qualitative (nominal or ordinal) variables
+
+```{r frequency of genhz and texcl values}
+table(h$genhz, h$texcl)
+```
+
+Also with margins ie. sums
+
+```{r frequency of genhz values w. margins}
+addmargins(table(h$genhz, h$texcl))
+```
+
+Proportions relative to the rows (`margin = 1`, below) or columns (`margin = 2`)
+
+```{r proportions}
+round(prop.table(table(h$genhz, h$texture_class), margin = 1) * 100)
+```
+
+Aggregations, here mean clay by genhz
+
+```{r}
+aggregate(clay ~ genhz, data = h, mean)
+```
+
+### 4.2 Measures of Dispersion
+
+Variance, ie deviation from mean is $s^2 = \frac{\Sigma_{i=1}^n(x_i - \bar{x})^2}{n-1}$ aka *sum of squares*.
+
+```{r clay variance}
+var(h$clay, na.rm = TRUE)
+```
+
+Standard deviation is $s = \sqrt{s^2}$, which is a silly way to say it.
+
+```{r clay tandard deviation}
+sd(h$clay, na.rm = TRUE)
+```
+
+```{r clay quantiles}
+quantile(h$clay, na.rm = TRUE)
+```
+
+Range ie. min and maximum
+
+```{r clay range}
+range(h$clay, na.rm = TRUE)
+```
+
+and value of range.
+
+```{r clay range value}
+diff(range(h$clay, na.rm = TRUE))
+```
+
+Interquantile range (IQR) is the range from the upper 75% quartile to the lower 25% quartile, ie. the 50% of observations occurring in the mid-range of the sample.
+
+```{r clay iqr}
+IQR(h$clay, na.rm = TRUE)
+```
+
+### 4.3 Correlation
+
+```{r}
+h$hzdepm <- (h$hzdepb + h$hzdept) / 2
+vars <- c("hzdepm", "clay", "sand", "total_frags_pct", "phfield")
+```
+
+```{r}
+round(cor(h[vars], use = "complete.obs"), 2)
+```
+
