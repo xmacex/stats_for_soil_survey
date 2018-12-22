@@ -201,3 +201,135 @@ vars <- c("hzdepm", "clay", "sand", "total_frags_pct", "phfield")
 round(cor(h[vars], use = "complete.obs"), 2)
 ```
 
+## 5. Graphical Methods
+
+Here, we are going to look at bars, histograms, density, Q-Q plots, box-whiskers and scatter & line methods. Quantile-Quantile (Q-Q) plot is "a plot of the actual data against a normal distribution".
+
+There is some talking about "ggplot geoms", but that is maybe different from `ggplot2`. The ggplot geoms are used here, see below. No, `ggplot()` is a function from `ggplot2`, described as
+
+> `ggplot()` initializes a ggplot object
+
+```{r}
+require("ggplot2")
+```
+
+
+### 5.1 Distributions
+
+Bar plot, histogram and density plot.
+
+```{r}
+idx <- is.na(h$texture_class)
+ggplot(h[!idx, ], aes(x = texcl)) +
+  geom_bar()
+```
+
+Note how the `h` is indexed with `[!indx, ]`, is by selecting rows, and the comma in there select all columns. For `ggplot()` to map aesthetics, there's the `aes()` mapping.
+
+Histogram
+
+```{r clay histogram}
+ggplot(h, aes(x = clay)) +
+  geom_histogram(bins = nclass.Sturges(h$clay))
+```
+
+and a density curve too, aka kernel density plot. Compared to a histogram which gives a count or percentage of observations, the preferred density estimation gives instead probability of observing any given value. AUC = 1.
+
+```{r clay density curve}
+ggplot(h, aes(x = clay)) +
+  geom_density()
+```
+
+Boxplot gives distribution with quantiles ie. 25%, 50% and 75% percentiles, mix and max values and outliers. The *Statistics for Soil Survey* says the whiskers are typically 1.5 * IQR above or below the 3rd and 1st quartile, and thus defines what an outlier is. Ok stay vigilant to how whisker plots are defined.
+
+I wasn't familiar with the term IQR, but makes sense and is a useful concept.
+
+```{r clay boxplot per genhz with whiskers}
+ggplot(h, aes(x = genhz, y = clay)) +
+  geom_boxplot()
+```
+
+Ok so quantile-quantile (Q-Q) plot is a plot of the actual data values against a normal distribution, with mean of 0 and standard deviation of 1. So data against theoretical.
+
+```{r clay qqplot}
+ggplot(h, aes(sample = clay)) +
+  geom_qq()
+```
+
+```{r}
+ggplot(h, aes(sample = total_frags_pct)) +
+  geom_qq()
+```
+
+> If the data set is perfectly symmetric (i.e. normal), the data points will form a straight line. Overall this plot shows that our clay example is more or less symmetric. However the second plot shows that our rock fragments are far from evenly distributed.
+>
+> A more detailed explanation of QQ plots may be found on Wikipedia:
+https://en.wikipedia.org/wiki/QQ_plot
+
+some discussion about properties of normalcy and that it is often used and assumed. Median is more robust than mean.
+
+```{r clay scatterplot with hzperm}
+ggplot(h, aes(x = clay, y = hzdepm)) +
+  geom_point() +
+  ylim(100, 0)
+```
+
+```{r clay lines with hzperm by peeid}
+ggplot(h, aes(y = clay, x = hzdepm, group = peiid)) +
+  geom_line() +
+  coord_flip() +
+  xlim(100, 0)
+```
+
+SPLOM with `GGally`
+
+```{r pairs}
+install.packages("GGally")
+library(GGally)
+
+vars <- c("hzdepm", "clay", "phfield", "total_frags_pct")
+ggpairs(h[vars])
+```
+
+3rd dimension with color, shape, si, layers et cetera.
+
+```{r}
+idx <- h$genhz %in% c("Cr", "R", "not-used")
+```
+
+```{r clay vs hzperm by genhz}
+ggplot(h[!idx, ], aes(x = clay, y = hzdepm, color = genhz)) +
+  geom_point() +
+  ylim(100, 0)
+```
+
+```{r}
+ggplot(h[!idx, ], aes(x = clay, color = genhz)) +
+  geom_density()
+```
+
+```{r}
+ggplot(h, aes(x = genhz, fill = texture_class)) +
+  geom_bar()
+```
+
+```{r sites heatmap}
+ggplot(site(loafercreek), aes(x = landform_string, y = pmkind)) + 
+  geom_tile(alpha = 0.2) 
+```
+
+Then some facets, first with boxplot
+
+```{r facet boxplot}
+df <- reshape2::melt(h,
+                     id.vars = c("peiid", "genhz", "hzdepm"),
+                     measure.vars = c("clay", "phfield", "total_frags_pct"))
+
+idx <- df$genhz %in% c("Cr", "R", "not-used")
+
+ggplot(df[!idx, ], aes(x = genhz, y = value)) +
+  geom_boxplot() +
+  xlab("genhz") +
+  facet_wrap(~ variable, scales = "free_y")
+```
+
