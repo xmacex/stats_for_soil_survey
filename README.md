@@ -1,6 +1,6 @@
 # Statistics for Soil Survey
 
-I am checking out some content in [*Statistics for Soil Survey*](http://ncss-tech.github.io/stats_for_soil_survey/), the original impetus was to prep my R skill and RDA with R, which is covered in [chapter 4](http://ncss-tech.github.io/stats_for_soil_survey/chapters/4_exploratory_analysis/4_exploratory_analysis.html)
+I am checking out some content in [*Statistics for Soil Survey*](http://ncss-tech.github.io/stats_for_soil_survey/) by Tom D’Avello and Stephen Roecker. The original impetus was to prep my R skill and RDA with R, which is covered in [chapter 4](http://ncss-tech.github.io/stats_for_soil_survey/chapters/4_exploratory_analysis/4_exploratory_analysis.html)
 
 ![(https://upload.wikimedia.org/wikipedia/en/4/4e/Soil_festivities_albumcover.jpg)
 
