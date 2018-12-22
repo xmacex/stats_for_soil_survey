@@ -333,3 +333,19 @@ ggplot(df[!idx, ], aes(x = genhz, y = value)) +
   facet_wrap(~ variable, scales = "free_y")
 ```
 
+```{r}
+library(aqp)
+
+s <- slice(loafercreek, 1:100 ~ clay + phfield + total_frags_pct)
+s <- slab(s, fm = ~ clay + phfield + total_frags_pct, 
+          slab.fun = function(x) quantile(x, c(0.1, 0.5, 0.9), na.rm = TRUE)
+          )
+
+ggplot(s, aes(x = top, y = X50.)) +
+  geom_line() +
+  geom_ribbon(aes(ymin = X10., ymax = X90., x = top), alpha = 0.2) +
+  xlim(c(100, 0)) +
+  coord_flip() +
+  facet_wrap(~ variable, scales = "free_x")
+```
+
